@@ -10,7 +10,9 @@ import torch
 from diffusers import DPMSolverMultistepScheduler
 
 from sd_xpu import ModelConfig, run_experiment
-from utils import plot_latency_results, save_results_to_csv
+from utils import plot_latency_results
+from utils import save_results_to_csv
+from utils import mkdirs
 
 os.environ["OMP_NUM_THREADS"] = "56"
 os.environ["KMP_BLOCKTIME"] = "1"
@@ -21,12 +23,13 @@ torch.manual_seed(12345)
 ipex.xpu.seed_all()
 
 
-def setup_logging():
-    logging.basicConfig(filename="performance.log", level=logging.INFO)
+def setup_logging(results_path=None):
+    logging.basicConfig(filename=f"{results_path}/performance.log", level=logging.INFO)
 
 
 def main():
-    setup_logging()
+    results_path = mkdirs("results")
+    setup_logging(results_path)
     models = ["stabilityai/stable-diffusion-2-1", "runwayml/stable-diffusion-v1-5"]
     prompts = [
         "A warrior from D&D holding his weapon backwards while looking at the battlefield, oil painting, portrait, armored, high res"
