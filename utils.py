@@ -1,9 +1,12 @@
 import csv
+import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+def mkdirs(name: str):
+    os.makedirs(os.path.join(os.getcwd(), name), exist_ok=True)
 
 def plot_latency_results(configurations, latencies):
     data = {
