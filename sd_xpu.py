@@ -33,9 +33,10 @@ def apply_ipex_optimize(pipe, dtype, input_example=None):
     pipe.text_encoder = ipex.optimize(
         pipe.text_encoder.eval(), dtype=dtype, inplace=True
     )
-    pipe.safety_checker = ipex.optimize(
-        pipe.safety_checker.eval(), dtype=dtype, inplace=True
-    )
+    if hasattr(pipe, "safety_checker") and pipe.safety_checker is not None:
+        pipe.safety_checker = ipex.optimize(
+            pipe.safety_checker.eval(), dtype=dtype, inplace=True
+        )
     return pipe
 
 
@@ -43,7 +44,8 @@ def apply_memory_format_optimization(pipe):
     pipe.unet = pipe.unet.to(memory_format=torch.channels_last)
     pipe.vae = pipe.vae.to(memory_format=torch.channels_last)
     pipe.text_encoder = pipe.text_encoder.to(memory_format=torch.channels_last)
-    pipe.safety_checker = pipe.safety_checker.to(memory_format=torch.channels_last)
+    if hasattr(pipe, "safety_checker") and pipe.safety_checker is not None:
+        pipe.safety_checker = pipe.safety_checker.to(memory_format=torch.channels_last)
     return pipe
 
 
@@ -59,7 +61,7 @@ def elapsed_time(
             config.prompt, num_inference_steps=config.num_inference_steps
         ).images
         if device.startswith("xpu"):
-            torch.xpu.syncronize()
+            torch.xpu.synchronize()
     end = time.time()
     images[0].save(f"images/{config.prompt.split()[0]}_{config.prefix}.png")
     return (end - start) / config.nb_pass
