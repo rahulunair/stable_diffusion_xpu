@@ -5,6 +5,7 @@ import intel_extension_for_pytorch as ipex
 import torch
 from diffusers import StableDiffusionPipeline
 
+from utils import mkdirs
 
 @dataclass
 class ModelConfig:
