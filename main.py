@@ -24,7 +24,7 @@ ipex.xpu.seed_all()
 
 
 def setup_logging(results_path=None):
-    logging.basicConfig(filename=f"{results_path}/performance.log", level=logging.INFO)
+    logging.basicConfig(filename=f"{results_path}/latency.log", level=logging.INFO)
 
 
 def main():
