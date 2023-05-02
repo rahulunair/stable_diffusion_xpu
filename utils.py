@@ -6,7 +6,9 @@ import pandas as pd
 import seaborn as sns
 
 def mkdirs(name: str):
-    os.makedirs(os.path.join(os.getcwd(), name), exist_ok=True)
+    path = os.path.join(os.getcwd(), name)
+    os.makedirs(new_path, exist_ok=True)
+    return path
 
 def plot_latency_results(configurations, latencies):
     data = {
