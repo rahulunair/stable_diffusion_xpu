@@ -63,7 +63,8 @@ def elapsed_time(
         if device.startswith("xpu"):
             torch.xpu.synchronize()
     end = time.time()
-    images[0].save(f"images/{config.prompt.split()[0]}_{config.prefix}.png")
+    images_path = mkdirs("results/images")
+    images[0].save(f"{images_path}/{config.prompt.split()[0]}_{config.prefix}.png")
     return (end - start) / config.nb_pass
 
 
