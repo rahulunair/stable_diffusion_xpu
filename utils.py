@@ -26,7 +26,7 @@ def plot_latency_results(configurations, latencies):
 
 
 def save_results_to_csv(configurations, latencies, filename="sd_latency.csv"):
-    results_path = mkdirs("results")os.path.join(results_path,
+    results_path = mkdirs("results")
     with open(os.path.join(results_path,filename), mode="w", newline="") as csvfile:
         fieldnames = ["config", "latency"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
