@@ -23,9 +23,21 @@ torch.manual_seed(12345)
 ipex.xpu.seed_all()
 
 
-def setup_logging(results_path=None):
-    logging.basicConfig(filename=f"{results_path}/latency.log", level=logging.INFO)
-
+def setup_logging(results_path=None, log_filename="latency.log"):
+    if results_path is not None:
+        log_path = os.path.join(results_path, log_filename)
+    else:
+        log_path = log_filename
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler = logging.FileHandler(log_path)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    
 
 def main():
     results_path = mkdirs("results")
@@ -38,8 +50,8 @@ def main():
         model_id=models[1],
         prompt=prompts[0],
     )
-    devices = ["xpu", "cpu"]
-    modes = [
+    devices = ["cpu", "xpu"]
+    dmodes = [
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
         {"dtype": torch.float32, "ipex_optimize": False, "scheduler": False},
@@ -53,9 +65,9 @@ def main():
             modes = [
                 {"dtype": torch.float16, "ipex_optimize": True, "scheduler": False},
                 {"dtype": torch.float16, "ipex_optimize": True, "scheduler": True},
-            ] + modes
+            ] + dmodes
         else:
-            modes = modes
+            modes = dmodes
         for mode in modes:
             dtype = mode["dtype"]
             ipex_optimize = mode["ipex_optimize"]
