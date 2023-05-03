@@ -1,3 +1,4 @@
+import argparse
 import os
 import warnings
 
@@ -42,15 +43,16 @@ def setup_logging(results_path=None, log_filename="latency.log"):
 def main():
     results_path = mkdirs("results")
     setup_logging(results_path)
+    
     models = ["stabilityai/stable-diffusion-2-1", "runwayml/stable-diffusion-v1-5"]
     prompts = [
-        "A warrior from D&D holding his weapon backwards while looking at the battlefield, oil painting, portrait, armored, high res"
+        "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
+
     ]
     model_config = ModelConfig(
         model_id=models[1],
         prompt=prompts[0],
     )
-    devices = ["cpu", "xpu"]
     dmodes = [
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": False},
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
@@ -60,6 +62,12 @@ def main():
     ]
     configs = []
     latencies = []
+    args = parse_args()
+    device_arg = args.device
+    if device_arg == "both":
+        devices = ["cpu", "xpu"]
+    else:
+        devices = [device_arg]
     for device in devices:
         if device == "xpu":
             modes = [
@@ -106,5 +114,29 @@ def main():
     plot_latency_results(configs, latencies)
 
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run AI experiment with different configurations.")
+    parser.add_argument("--device", choices=["cpu", "xpu", "both"], default="both",
+                        help="Specify the device to run the experiment on (cpu, xpu, or both).")
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
+    device_arg = args.device
+
+    # Rest of your code...
+
+    if device_arg == "both":
+        devices = ["cpu", "xpu"]
+    else:
+        devices = [device_arg]
+
+    # Rest of your code...
+
+if __name__ == "__main__":
+    main()
+
+    
 if __name__ == "__main__":
     main()
