@@ -12,8 +12,8 @@ from utils import mkdirs
 class ModelConfig:
     model_id: str
     prompt: str
-    nb_pass: int = 50
-    num_inference_steps: int = 20
+    nb_pass: int = 20
+    num_inference_steps: int = 50
     prefix: str = ""
 
 
