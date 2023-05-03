@@ -1,5 +1,7 @@
+import statistics
 import time
 from dataclasses import dataclass
+import numpy as np
 
 import intel_extension_for_pytorch as ipex
 import torch

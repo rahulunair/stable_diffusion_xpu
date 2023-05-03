@@ -2,6 +2,7 @@ import argparse
 import os
 import warnings
 
+
 warnings.filterwarnings("ignore")
 
 import logging
@@ -11,7 +12,8 @@ import torch
 from diffusers import DPMSolverMultistepScheduler
 
 from sd_xpu import ModelConfig, run_experiment
-from utils import generate_prompt, mkdirs, plot_latency_results, save_results_to_csv
+from utils import (generate_prompt, mkdirs, plot_latency_results,
+                   save_results_to_csv)
 
 os.environ["OMP_NUM_THREADS"] = "56"
 os.environ["KMP_BLOCKTIME"] = "1"
