@@ -52,7 +52,7 @@ def main():
     )
     devices = ["cpu", "xpu"]
     dmodes = [
-        {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
+        {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": False},
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
         {"dtype": torch.float32, "ipex_optimize": False, "scheduler": False},
         {"dtype": torch.float32, "ipex_optimize": True, "scheduler": False},
@@ -87,14 +87,19 @@ def main():
                     model_config.model_id, subfolder="scheduler"
                 )
             else:
-                scheduler = None
-            latency = run_experiment(
+                scheduler = None         
+            latency_stats = run_experiment(
                 model_config, device, dtype, scheduler, ipex_optimize
             )
-            print(f"Latency for {device} with mode {model_config.prefix}: {latency}")
-            logging.info(
-                f"Latency for {device} with mode {model_config.prefix}: {latency}"
-            )
+            device_and_mode = f"{device} with mode {model_config.prefix}"
+            logging.info(f"Latency statistics for {device_and_mode}:")
+            logging.info(f"  Average Latency: {latency_stats['average_latency']:.6f}")
+            logging.info(f"  Mean Latency: {latency_stats['mean_latency']:.6f}")
+            logging.info(f"  Median Latency: {latency_stats['median_latency']:.6f}")
+            logging.info(f"  Standard Deviation: {latency_stats['stdev_latency']:.6f}")
+            logging.info(f"  90th Percentile Latency: {latency_stats['90th_percentile_latency']:.6f}")
+            logging.info(f"  99th Percentile Latency: {latency_stats['99th_percentile_latency']:.6f}")
+
             configs.append(model_config.prefix)
             latencies.append(latency)
     save_results_to_csv(configs, latencies)
