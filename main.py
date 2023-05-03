@@ -45,10 +45,6 @@ def main():
     setup_logging(results_path)
     
     models = ["stabilityai/stable-diffusion-2-1", "runwayml/stable-diffusion-v1-5"]
-    prompts = [
-        "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
-
-    ]
     model_config = ModelConfig(
         model_id=models[1],
         prompt=prompts[0],
@@ -63,6 +59,13 @@ def main():
     configs = []
     latencies = []
     args = parse_args()
+    if args.random:
+           category = random.choice(["animal", "archviz", "cartoon", "building", "concept_art"])
+           prompts = [f"{generate_prompt(category)}]
+    else:
+    prompts = [
+        "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
+    ]
     device_arg = args.device
     if device_arg == "both":
         devices = ["cpu", "xpu"]
@@ -115,27 +118,14 @@ def main():
 
 
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run AI experiment with different configurations.")
     parser.add_argument("--device", choices=["cpu", "xpu", "both"], default="both",
                         help="Specify the device to run the experiment on (cpu, xpu, or both).")
+    parser.add_argument('--random', action='store_true', help='Generate a random prompt for the experiment')
     return parser.parse_args()
 
-def main():
-    args = parse_args()
-    device_arg = args.device
-
-    # Rest of your code...
-
-    if device_arg == "both":
-        devices = ["cpu", "xpu"]
-    else:
-        devices = [device_arg]
-
-    # Rest of your code...
-
-if __name__ == "__main__":
-    main()
 
     
 if __name__ == "__main__":
