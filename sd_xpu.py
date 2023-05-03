@@ -101,10 +101,10 @@ def run_experiment(
     percentile_99 = np.percentile(loop_time, 99)
 
     return {
-        'average_latency': latency,
-        'mean_latency': mean_latency,
-        'median_latency': median_latency,
-        'stdev_latency': stdev_latency,
-        '90th_percentile_latency': percentile_90,
-        '99th_percentile_latency': percentile_99
+        "average_latency" : latency,
+        "mean_latency" : mean_latency,
+        "median_latency" : median_latency,
+        "stdev_latency" : stdev_latency,
+        "90th_percentile_latency" : percentile_90,
+        "99th_percentile_latency" : percentile_99
     }
