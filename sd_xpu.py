@@ -14,7 +14,7 @@ from utils import mkdirs
 class ModelConfig:
     model_id: str
     prompt: str
-    nb_pass: int = 20
+    nb_pass: int = 10
     num_inference_steps: int = 50
     prefix: str = ""
 
@@ -106,7 +106,6 @@ def run_experiment(
     stdev_latency = statistics.stdev(loop_time)
     percentile_90 = np.percentile(loop_time, 90)
     percentile_99 = np.percentile(loop_time, 99)
-
     return {
         "average_latency": latency,
         "mean_latency": mean_latency,

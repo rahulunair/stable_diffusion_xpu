@@ -60,7 +60,7 @@ def main():
     results_path = mkdirs("results")
     setup_logging(results_path)
 
-    models = ["stabilityai/stable-diffusion-2-1", "runwayml/stable-diffusion-v1-5"]
+    model = "runwayml/stable-diffusion-v1-5"
     dmodes = [
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": False},
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
@@ -78,10 +78,10 @@ def main():
         prompts = [f"{generate_prompt(category)}"]
     else:
         prompts = [
-            "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
+            "Portrait photo of a Ottoman market at night with no people during the golden age, photograph, depth of field, moody light, golden hour, inspired by the style of asiatic paintings, extremely detailed, taken with a Nikon D850, award-winning photography"
         ]
     model_config = ModelConfig(
-        model_id=models[1],
+        model_id=model,
         prompt=prompts[0],
     )
     device_arg = args.device
