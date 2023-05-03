@@ -11,9 +11,7 @@ import torch
 from diffusers import DPMSolverMultistepScheduler
 
 from sd_xpu import ModelConfig, run_experiment
-from utils import plot_latency_results
-from utils import save_results_to_csv
-from utils import mkdirs
+from utils import generate_prompt, mkdirs, plot_latency_results, save_results_to_csv
 
 os.environ["OMP_NUM_THREADS"] = "56"
 os.environ["KMP_BLOCKTIME"] = "1"
@@ -38,17 +36,29 @@ def setup_logging(results_path=None, log_filename="latency.log"):
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
-    
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Run stable diffusion with different configurations."
+    )
+    parser.add_argument(
+        "--device",
+        choices=["cpu", "xpu", "both"],
+        default="both",
+        help="Specify the device to run on (cpu, xpu, or both).",
+    )
+    parser.add_argument(
+        "--random", action="store_true", help="Generate a random prompt"
+    )
+    return parser.parse_args()
+
 
 def main():
     results_path = mkdirs("results")
     setup_logging(results_path)
-    
+
     models = ["stabilityai/stable-diffusion-2-1", "runwayml/stable-diffusion-v1-5"]
-    model_config = ModelConfig(
-        model_id=models[1],
-        prompt=prompts[0],
-    )
     dmodes = [
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": False},
         {"dtype": torch.bfloat16, "ipex_optimize": True, "scheduler": True},
@@ -60,12 +70,18 @@ def main():
     latencies = []
     args = parse_args()
     if args.random:
-           category = random.choice(["animal", "archviz", "cartoon", "building", "concept_art"])
-           prompts = [f"{generate_prompt(category)}]
+        category = random.choice(
+            ["animal", "archviz", "cartoon", "building", "concept_art"]
+        )
+        prompts = [f"{generate_prompt(category)}"]
     else:
-    prompts = [
-        "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
-    ]
+        prompts = [
+            "Portrait photo of a bustling Ottoman market during the golden age, photograph, highly detailed faces, depth of field, moody light, golden hour, inspired by the style of Dan Winters, Russell James, and Steve McCurry, centered composition, extremely detailed, taken with a Nikon D850, award-winning photography"
+        ]
+    model_config = ModelConfig(
+        model_id=models[1],
+        prompt=prompts[0],
+    )
     device_arg = args.device
     if device_arg == "both":
         devices = ["cpu", "xpu"]
@@ -98,7 +114,7 @@ def main():
                     model_config.model_id, subfolder="scheduler"
                 )
             else:
-                scheduler = None         
+                scheduler = None
             latency_stats = run_experiment(
                 model_config, device, dtype, scheduler, ipex_optimize
             )
@@ -108,25 +124,18 @@ def main():
             logging.info(f"  Mean Latency: {latency_stats['mean_latency']:.6f}")
             logging.info(f"  Median Latency: {latency_stats['median_latency']:.6f}")
             logging.info(f"  Standard Deviation: {latency_stats['stdev_latency']:.6f}")
-            logging.info(f"  90th Percentile Latency: {latency_stats['90th_percentile_latency']:.6f}")
-            logging.info(f"  99th Percentile Latency: {latency_stats['99th_percentile_latency']:.6f}")
+            logging.info(
+                f"  90th Percentile Latency: {latency_stats['90th_percentile_latency']:.6f}"
+            )
+            logging.info(
+                f"  99th Percentile Latency: {latency_stats['99th_percentile_latency']:.6f}"
+            )
 
             configs.append(model_config.prefix)
-            latencies.append(latency)
+            latencies.append(latency_stats)
     save_results_to_csv(configs, latencies)
     plot_latency_results(configs, latencies)
 
 
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Run AI experiment with different configurations.")
-    parser.add_argument("--device", choices=["cpu", "xpu", "both"], default="both",
-                        help="Specify the device to run the experiment on (cpu, xpu, or both).")
-    parser.add_argument('--random', action='store_true', help='Generate a random prompt for the experiment')
-    return parser.parse_args()
-
-
-    
 if __name__ == "__main__":
     main()

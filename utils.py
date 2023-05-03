@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+
 def mkdirs(name: str):
     path = os.path.join(os.getcwd(), name)
     os.makedirs(path, exist_ok=True)
     return path
+
 
 def plot_latency_results(configurations, latencies):
     data = {
@@ -37,7 +39,7 @@ def plot_latency_results(configurations, latencies):
         axes[0, 0].set_title("Mean Latency")
         axes[0, 0].set_ylabel("Latency (seconds)")
         axes[0, 0].set_xticklabels(labels=df["Configuration"], rotation=45)
-        
+
         sns.barplot(ax=axes[0, 1], x="Configuration", y="Median Latency", data=df)
         axes[0, 1].set_title("Median Latency")
         axes[0, 1].set_ylabel("Latency (seconds)")
@@ -48,16 +50,20 @@ def plot_latency_results(configurations, latencies):
         axes[1, 0].set_ylabel("Latency (seconds)")
         axes[1, 0].set_xticklabels(labels=df["Configuration"], rotation=45)
 
-        sns.barplot(ax=axes[1, 1], x="Configuration", y="90th Percentile Latency", data=df)
+        sns.barplot(
+            ax=axes[1, 1], x="Configuration", y="90th Percentile Latency", data=df
+        )
         axes[1, 1].set_title("90th Percentile Latency")
         axes[1, 1].set_ylabel("Latency (seconds)")
         axes[1, 1].set_xticklabels(labels=df["Configuration"], rotation=45)
 
-        sns.barplot(ax=axes[2, 0], x="Configuration", y="99th Percentile Latency", data=df)
+        sns.barplot(
+            ax=axes[2, 0], x="Configuration", y="99th Percentile Latency", data=df
+        )
         axes[2, 0].set_title("99th Percentile Latency")
         axes[2, 0].set_ylabel("Latency (seconds)")
         axes[2, 0].set_xticklabels(labels=df["Configuration"], rotation=45)
-        
+
         sns.boxplot(ax=axes[2, 1], x="Configuration", y="Average Latency", data=df)
         axes[2, 1].set_title("Average Latency Distribution")
         axes[2, 1].set_ylabel("Latency (seconds)")
@@ -88,15 +94,15 @@ def save_results_to_csv(configurations, latencies, filename="sd_latency.csv"):
         data["99th Percentile Latency"].append(latency["99th_percentile_latency"])
     df = pd.DataFrame(data)
     df.to_csv(os.path.join(results_path, filename), index=False)
-    
+
 
 def generate_prompt(category: str) -> str:
     """
     Generate a prompt based on the given category.
-    
+
     The original source of the prompt templates is from:
     https://github.com/Dalabad/stable-diffusion-prompt-templates
-    
+
     Args:
         category (str): The category of the prompt.
 
