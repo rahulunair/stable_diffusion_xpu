@@ -88,10 +88,23 @@ def run_experiment(
     if dtype and dtype != torch.float32:
         if device.startswith("xpu"):
             with torch.xpu.amp.autocast(enabled=True, dtype=dtype):
-                latency = elapsed_time(pipe, model_config, device=device)
+                latency, loop_time = elapsed_time(pipe, model_config, device=device)
         else:
             with torch.cpu.amp.autocast(enabled=True, dtype=dtype):
-                latency = elapsed_time(pipe, model_config, device=device)
+                latency, loop_time = elapsed_time(pipe, model_config, device=device)
     else:
-        latency = elapsed_time(pipe, model_config, device=device)
-    return latency
+        latency, loop_time = elapsed_time(pipe, model_config, device=device)
+    mean_latency = statistics.mean(loop_time)
+    median_latency = statistics.median(loop_time)
+    stdev_latency = statistics.stdev(loop_time)
+    percentile_90 = np.percentile(loop_time, 90)
+    percentile_99 = np.percentile(loop_time, 99)
+
+    return {
+        'average_latency': latency,
+        'mean_latency': mean_latency,
+        'median_latency': median_latency,
+        'stdev_latency': stdev_latency,
+        '90th_percentile_latency': percentile_90,
+        '99th_percentile_latency': percentile_99
+    }
