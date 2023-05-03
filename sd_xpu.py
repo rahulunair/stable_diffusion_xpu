@@ -12,7 +12,7 @@ from utils import mkdirs
 class ModelConfig:
     model_id: str
     prompt: str
-    nb_pass: int = 10
+    nb_pass: int = 50
     num_inference_steps: int = 20
     prefix: str = ""
 
@@ -54,20 +54,24 @@ def apply_memory_format_optimization(pipe):
 def elapsed_time(
     pipeline: StableDiffusionPipeline, config: ModelConfig, device="cpu"
 ) -> float:
+    loop_time = []
     images = pipeline(
         config.prompt, num_inference_steps=ModelConfig.num_inference_steps
     ).images
     start = time.time()
     for _ in range(config.nb_pass):
+        l_s_time = time.time()
         images = pipeline(
             config.prompt, num_inference_steps=config.num_inference_steps
         ).images
         if device.startswith("xpu"):
             torch.xpu.synchronize()
+        l_e_time = time.time()
+        loop_time.append((l_e_time - l_s_time))
     end = time.time()
     images_path = mkdirs("results/images")
     images[0].save(f"{images_path}/{config.prompt.split()[0]}_{config.prefix}.png")
-    return (end - start) / config.nb_pass
+    return (end - start) / config.nb_pass, loop_time
 
 
 def run_experiment(
