@@ -110,7 +110,6 @@ def generate_prompt(category: str) -> str:
         str: A generated prompt based on the category.
     """
     prompt_templates = {
-        "animal": "{{Prompt}}, wildlife photography, photograph, high quality, wildlife, f 1.8, soft focus, 8k, national geographic, award - winning photograph by nick nichols",
         "archviz": "{{Prompt}}, by James McDonald and Joarc Architects, home, interior, octane render, deviantart, cinematic, key art, hyperrealism, sun light, sunrays, canon eos c 300, ƒ 1.8, 35 mm, 8k, medium - format print",
         "building": "{{Prompt}}, shot 35 mm, realism, octane render, 8k, trending on artstation, 35 mm camera, unreal engine, hyper detailed, photo - realistic maximum detail, volumetric light, realistic matte painting, hyper photorealistic, trending on artstation, ultra - detailed, realistic",
         "cartoon": "{{Prompt}}, anthro, very cute kid's film character, disney pixar zootopia character concept artwork, 3d concept, detailed fur, high detail iconic character for upcoming film, trending on artstation, character design, 3d artistic render, highly detailed, octane, blender, cartoon, shadows, lighting",
@@ -118,12 +117,6 @@ def generate_prompt(category: str) -> str:
     }
 
     prompts = {
-        "animal": [
-            "A lion hunting its prey",
-            "A majestic elephant in the savanna",
-            "A bird of paradise displaying its vibrant plumage",
-            "A group of dolphins swimming in the ocean",
-        ],
         "archviz": [
             "A modern open-concept living room",
             "A cozy minimalist bedroom",
